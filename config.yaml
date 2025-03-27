@@ -1,0 +1,9 @@
+translator:
+  type: google
+  api_key: ""
+  model: ""
+
+render:
+  type: reportlab
+  font_name: Arial
+  render_mode: INTERLEAVE  # TRANSLATION_ONLY / SIDE_BY_SIDE / INTERLEAVE 

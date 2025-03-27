@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecondLanguage PDF翻译</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      width: 350px;
+      margin: 0;
+      padding: 16px;
+    }
+    
+    h1 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #333;
+    }
+    
+    .section {
+      margin-bottom: 16px;
+      padding: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+    
+    .section-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #444;
+    }
+    
+    .form-group {
+      margin-bottom: 10px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+    
+    select, input, button {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    
+    button {
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      font-weight: bold;
+    }
+    
+    button:hover {
+      background-color: #357ae8;
+    }
+    
+    .file-input-label {
+      background-color: #4285f4;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: block;
+      font-weight: bold;
+    }
+    
+    .file-input-label:hover {
+      background-color: #357ae8;
+    }
+    
+    #pdfFileInput {
+      display: none;
+    }
+    
+    .language-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    
+    .language-col {
+      flex: 1;
+    }
+    
+    #loadingIndicator {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+    
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 2s linear infinite;
+      margin: 0 auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    #errorDisplay {
+      display: none;
+      background-color: #ffebee;
+      color: #c62828;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    
+    .tabs {
+      display: flex;
+      margin-bottom: 16px;
+    }
+    
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      background-color: #e0e0e0;
+      cursor: pointer;
+    }
+    
+    .tab.active {
+      background-color: #4285f4;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>SecondLanguage PDF翻译器</h1>
+  
+  <div id="errorDisplay"></div>
+  
+  <div class="tabs">
+    <div class="tab active" data-tab="localPdf">本地PDF</div>
+    <div class="tab" data-tab="remotePdf">远程PDF</div>
+  </div>
+  
+  <div class="language-row">
+    <div class="language-col">
+      <div class="form-group">
+        <label for="fromLangSelect">从:</label>
+        <select id="fromLangSelect">
+          <option value="English">英语</option>
+          <option value="Chinese">中文</option>
+          <option value="Japanese">日语</option>
+          <option value="Korean">韩语</option>
+          <option value="French">法语</option>
+          <option value="German">德语</option>
+          <option value="Spanish">西班牙语</option>
+          <option value="Italian">意大利语</option>
+          <option value="Russian">俄语</option>
+          <option value="Portuguese">葡萄牙语</option>
+        </select>
+      </div>
+    </div>
+    <div class="language-col">
+      <div class="form-group">
+        <label for="toLangSelect">到:</label>
+        <select id="toLangSelect">
+          <option value="English">英语</option>
+          <option value="Chinese" selected>中文</option>
+          <option value="Japanese">日语</option>
+          <option value="Korean">韩语</option>
+          <option value="French">法语</option>
+          <option value="German">德语</option>
+          <option value="Spanish">西班牙语</option>
+          <option value="Italian">意大利语</option>
+          <option value="Russian">俄语</option>
+          <option value="Portuguese">葡萄牙语</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  
+  <div id="localPdfTab" class="tab-content active">
+    <div class="section">
+      <div class="section-title">选择本地PDF文件</div>
+      <div class="form-group">
+        <label for="pdfFileInput" class="file-input-label">
+          选择PDF文件
+        </label>
+        <input type="file" id="pdfFileInput" accept="application/pdf" />
+      </div>
+    </div>
+  </div>
+  
+  <div id="remotePdfTab" class="tab-content">
+    <div class="section">
+      <div class="section-title">输入PDF URL</div>
+      <form id="pdfUrlForm">
+        <div class="form-group">
+          <label for="pdfUrlInput">PDF URL:</label>
+          <input type="url" id="pdfUrlInput" placeholder="https://example.com/document.pdf" required />
+        </div>
+        <button type="submit">翻译</button>
+      </form>
+    </div>
+  </div>
+  
+  <div id="loadingIndicator">
+    <div class="loader"></div>
+    <p>正在翻译PDF，请稍候...</p>
+  </div>
+  
+  <script src="client_example.js"></script>
+  <script>
+    // 初始化标签页
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // 移除所有active类
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // 添加active类到当前标签页
+        tab.classList.add('active');
+        const tabId = tab.getAttribute('data-tab') + 'Tab';
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+    
+    // 当DOM加载完成后初始化PDF翻译器
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.pdfTranslator) {
+        window.pdfTranslator.initPDFTranslator();
+      } else {
+        console.error('PDF翻译器未加载');
+      }
+    });
+  </script>
+</body>
+</html> 
